@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+@theme {
+  --color-midnight-500: #242542;
+}
+
+* {
+  outline: 1px solid red; /* Better for debugging, doesn't affect layout */
+  box-sizing: border-box;
+}
