@@ -1,6 +1,6 @@
 <script setup>
-import Logo from "./components/Logo.vue";
+import Welcome from "./components/Welcome.vue";
 </script>
 <template>
-  <Logo class="flex justify-around" />
+  <Welcome class="grid place-items-center" />
 </template>
