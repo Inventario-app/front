@@ -1,6 +1,4 @@
-<script setup>
-import Welcome from "./components/Welcome.vue";
-</script>
+<script setup></script>
 <template>
-  <Welcome class="grid place-items-center" />
+  <RouterView />
 </template>
