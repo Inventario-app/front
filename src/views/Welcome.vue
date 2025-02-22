@@ -1,18 +1,25 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
+import router from "../router";
+
 import axios from "axios";
 import LoginButton from "../components/login/LoginButton.vue";
+import LoginForm from "../components/login/LoginForm.vue";
 
 const data = ref(null);
 const showLoginForm = ref(false);
-const userName = ref("");
-const password = ref("");
+const loginInput = ref({
+  usr: "",
+  psw: "",
+});
+
+const isLoginComplete = computed(() => {
+  return loginInput.value.usr && loginInput.value.psw;
+});
 
 onMounted(async () => {
   try {
     const response = await axios.get("http://localhost:3000");
-    console.log("hello there ");
-    console.log(response);
     if (response.status === 200) {
       data.value = "Welcome to Inventario";
     } else {
@@ -22,6 +29,41 @@ onMounted(async () => {
     console.log(error);
   }
 });
+
+const submitLogin = async () => {
+  if (!isLoginComplete.value) {
+    return;
+  } else {
+    const formatedData = {
+      email: loginInput.value.usr,
+      password: loginInput.value.psw,
+    };
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/login",
+        formatedData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+      const token = response.data.token;
+
+      try {
+        // const userRequest = await axios.get("http://localhost:3000/login");
+      } catch (error) {}
+
+      sessionStorage.setItem("token", token);
+      sessionStorage.setItem("id", response.data.id);
+      sessionStorage.setItem("role", response.data.role);
+      sessionStorage.setItem("name", response.data.name);
+      router.push("/dashboard");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+};
 </script>
 
 <template>
@@ -36,9 +78,22 @@ onMounted(async () => {
       class="transition delay-150 duration-300 ease-in-out font-roboto"
       @click="showLoginForm = !showLoginForm"
     />
-    <div v-if="showLoginForm" class="grid gap-4">
-      <input type="text" class="bg-white rounded-sm px-4 py-2" />
-      <input type="text" class="bg-white rounded-lg px-4 py-2" />
-    </div>
+    <form
+      v-if="showLoginForm"
+      @submit.prevent="submitLogin"
+      class="grid gap-4 place-items-center"
+    >
+      <LoginForm
+        v-model="loginInput.usr"
+        type="email"
+        placeholder="User email"
+      />
+      <LoginForm
+        v-model="loginInput.psw"
+        type="password"
+        placeholder="Password"
+      />
+      <button type="submit" class="hidden"></button>
+    </form>
   </div>
 </template>
